@@ -365,7 +365,7 @@ bulk_create() {
     local count=0
     local errors=0
 
-    echo "$records" | jq -c '.[]' | while read -r record; do
+    while read -r record; do
         local response
         response=$(cf_request "POST" "/zones/$zone_id/dns_records" "$record")
 
@@ -378,7 +378,7 @@ bulk_create() {
             echo -e "${RED}Failed to create record${NC}"
             ((errors++))
         fi
-    done
+    done < <(echo "$records" | jq -c '.[]')
 
     echo ""
     echo -e "${BLUE}Created $count records, $errors errors${NC}"

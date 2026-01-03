@@ -52,20 +52,12 @@ purge_urls() {
         return 2
     fi
 
-    local urls="["
-    local first=true
-    for url in "$@"; do
-        if [[ "$first" != "true" ]]; then
-            urls+=","
-        fi
-        urls+="\"$url\""
-        first=false
-    done
-    urls+="]"
+    local urls
+    urls=$(printf '%s\n' "$@" | jq -R . | jq -s '{files: .}')
 
     echo -e "${BLUE}Purging ${#@} URL(s)...${NC}"
     local response
-    response=$(cf_request "POST" "/zones/$zone_id/purge_cache" "{\"files\":$urls}")
+    response=$(cf_request "POST" "/zones/$zone_id/purge_cache" "$urls")
 
     if check_response "$response"; then
         echo -e "${GREEN}URLs purged successfully!${NC}"
@@ -89,20 +81,12 @@ purge_tags() {
         return 2
     fi
 
-    local tags="["
-    local first=true
-    for tag in "$@"; do
-        if [[ "$first" != "true" ]]; then
-            tags+=","
-        fi
-        tags+="\"$tag\""
-        first=false
-    done
-    tags+="]"
+    local tags
+    tags=$(printf '%s\n' "$@" | jq -R . | jq -s '{tags: .}')
 
     echo -e "${BLUE}Purging by tags...${NC}"
     local response
-    response=$(cf_request "POST" "/zones/$zone_id/purge_cache" "{\"tags\":$tags}")
+    response=$(cf_request "POST" "/zones/$zone_id/purge_cache" "$tags")
 
     if check_response "$response"; then
         echo -e "${GREEN}Cache tags purged successfully!${NC}"
@@ -126,20 +110,12 @@ purge_prefixes() {
         return 2
     fi
 
-    local prefixes="["
-    local first=true
-    for prefix in "$@"; do
-        if [[ "$first" != "true" ]]; then
-            prefixes+=","
-        fi
-        prefixes+="\"$prefix\""
-        first=false
-    done
-    prefixes+="]"
+    local prefixes
+    prefixes=$(printf '%s\n' "$@" | jq -R . | jq -s '{prefixes: .}')
 
     echo -e "${BLUE}Purging by prefixes...${NC}"
     local response
-    response=$(cf_request "POST" "/zones/$zone_id/purge_cache" "{\"prefixes\":$prefixes}")
+    response=$(cf_request "POST" "/zones/$zone_id/purge_cache" "$prefixes")
 
     if check_response "$response"; then
         echo -e "${GREEN}Prefixes purged successfully!${NC}"
@@ -163,20 +139,12 @@ purge_hosts() {
         return 2
     fi
 
-    local hosts="["
-    local first=true
-    for host in "$@"; do
-        if [[ "$first" != "true" ]]; then
-            hosts+=","
-        fi
-        hosts+="\"$host\""
-        first=false
-    done
-    hosts+="]"
+    local hosts
+    hosts=$(printf '%s\n' "$@" | jq -R . | jq -s '{hosts: .}')
 
     echo -e "${BLUE}Purging by hosts...${NC}"
     local response
-    response=$(cf_request "POST" "/zones/$zone_id/purge_cache" "{\"hosts\":$hosts}")
+    response=$(cf_request "POST" "/zones/$zone_id/purge_cache" "$hosts")
 
     if check_response "$response"; then
         echo -e "${GREEN}Hosts purged successfully!${NC}"

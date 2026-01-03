@@ -71,7 +71,7 @@ get_worker() {
     if [[ -n "$CF_API_TOKEN" ]]; then
         response=$(curl -s "$url" -H "Authorization: Bearer $CF_API_TOKEN")
     else
-        response=$(curl -s "$url" -H "X-Auth-Key: $CF_GLOBAL_KEY")
+        response=$(curl -s "$url" -H "X-Auth-Key: $CF_GLOBAL_KEY" -H "X-Auth-Email: $CF_AUTH_EMAIL")
     fi
 
     # Check if response is JSON error (API returns JSON errors, script content is plain text)
@@ -121,6 +121,7 @@ deploy_worker() {
     else
         response=$(curl -s -X PUT "$url" \
             -H "X-Auth-Key: $CF_GLOBAL_KEY" \
+            -H "X-Auth-Email: $CF_AUTH_EMAIL" \
             -H "Content-Type: application/javascript" \
             --data-binary "@$script_file")
     fi

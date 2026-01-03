@@ -210,6 +210,16 @@ allow_ip() {
     create_rule "$zone_id" --action allow --expression "(ip.src eq $ip)" --description "$description"
 }
 
+# Validate ISO 3166-1 alpha-2 country code
+validate_country_code() {
+    local code="$1"
+    # Must be exactly 2 uppercase letters
+    if [[ ! "$code" =~ ^[A-Z]{2}$ ]]; then
+        return 1
+    fi
+    return 0
+}
+
 # Block country
 block_country() {
     local zone_id="$1"
@@ -218,6 +228,14 @@ block_country() {
 
     if [[ -z "$zone_id" || -z "$country_code" ]]; then
         echo -e "${RED}Error: Zone ID and country code required${NC}" >&2
+        return 2
+    fi
+
+    # Convert to uppercase for validation
+    country_code=$(echo "$country_code" | tr '[:lower:]' '[:upper:]')
+
+    if ! validate_country_code "$country_code"; then
+        echo -e "${RED}Error: Invalid country code format. Must be 2 letters (e.g., US, CN, RU)${NC}" >&2
         return 2
     fi
 

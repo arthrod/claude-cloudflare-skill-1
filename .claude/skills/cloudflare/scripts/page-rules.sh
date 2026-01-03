@@ -164,7 +164,8 @@ cache_everything() {
         return 2
     fi
 
-    local actions="[{\"id\":\"cache_level\",\"value\":\"cache_everything\"},{\"id\":\"edge_cache_ttl\",\"value\":$edge_ttl}]"
+    local actions
+    actions=$(jq -n --argjson ttl "$edge_ttl" '[{id:"cache_level",value:"cache_everything"},{id:"edge_cache_ttl",value:$ttl}]')
     create_rule "$zone_id" --url "$url" --actions "$actions"
 }
 
@@ -180,7 +181,8 @@ forwarding_rule() {
         return 2
     fi
 
-    local actions="[{\"id\":\"forwarding_url\",\"value\":{\"url\":\"$to_url\",\"status_code\":$status_code}}]"
+    local actions
+    actions=$(jq -n --arg url "$to_url" --argjson code "$status_code" '[{id:"forwarding_url",value:{url:$url,status_code:$code}}]')
     create_rule "$zone_id" --url "$from_url" --actions "$actions"
 }
 
