@@ -5,6 +5,7 @@
 #
 
 set -e
+set -o pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/cf-api.sh"
@@ -63,15 +64,11 @@ set_setting() {
     fi
 
     local data
-    # Check if value is a JSON object or simple value
-    if [[ "$value" == "{"* ]]; then
-        data="{\"value\":$value}"
-    elif [[ "$value" == "true" || "$value" == "false" ]]; then
-        data="{\"value\":$value}"
-    elif [[ "$value" =~ ^[0-9]+$ ]]; then
-        data="{\"value\":$value}"
+    # Use jq to safely construct the JSON payload
+    if [[ "$value" == "true" || "$value" == "false" || "$value" =~ ^[0-9]+$ || "$value" == "{"* ]]; then
+        data=$(jq -n --argjson v "$value" '{value: $v}')
     else
-        data="{\"value\":\"$value\"}"
+        data=$(jq -n --arg v "$value" '{value: $v}')
     fi
 
     echo -e "${BLUE}Setting $setting to: $value${NC}"

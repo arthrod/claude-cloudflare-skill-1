@@ -7,6 +7,7 @@
 #
 
 set -e
+set -o pipefail
 
 # Configuration
 CF_API_BASE="https://api.cloudflare.com/client/v4"
@@ -35,11 +36,17 @@ load_credentials() {
     # Extract the Global API Key if token not found (37 char hex string on its own line)
     if [[ -z "$CF_API_TOKEN" ]]; then
         CF_GLOBAL_KEY=$(echo "$file_content" | grep -E '^[a-f0-9]{37}$' | head -1 || true)
+        # Extract email for Global API Key auth (required for X-Auth-Email header)
+        CF_AUTH_EMAIL=$(echo "$file_content" | grep -oE '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' | head -1 || true)
     fi
 
     if [[ -z "$CF_API_TOKEN" && -z "$CF_GLOBAL_KEY" ]]; then
         echo -e "${RED}Error: Could not extract API credentials from $CF_CREDS_FILE${NC}" >&2
         exit 3
+    fi
+
+    if [[ -n "$CF_GLOBAL_KEY" && -z "$CF_AUTH_EMAIL" ]]; then
+        echo -e "${YELLOW}Warning: Global API Key found but no email. Add your Cloudflare email to $CF_CREDS_FILE${NC}" >&2
     fi
 }
 
@@ -58,8 +65,9 @@ cf_request() {
     if [[ -n "$CF_API_TOKEN" ]]; then
         curl_args+=(-H "Authorization: Bearer $CF_API_TOKEN")
     else
+        # Global API Key requires both Key and Email headers
         curl_args+=(-H "X-Auth-Key: $CF_GLOBAL_KEY")
-        # Note: Would need email for global key auth
+        curl_args+=(-H "X-Auth-Email: $CF_AUTH_EMAIL")
     fi
 
     curl_args+=(-H "Content-Type: application/json")
