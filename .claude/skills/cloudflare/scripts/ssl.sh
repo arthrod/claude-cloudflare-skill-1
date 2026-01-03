@@ -254,13 +254,23 @@ get_hsts() {
 enable_hsts() {
     local zone_id="$1"
     local max_age="${2:-31536000}"
+    local include_subdomains="${3:-true}"
 
     if [[ -z "$zone_id" ]]; then
         echo -e "${RED}Error: Zone ID required${NC}" >&2
         return 2
     fi
 
-    local data="{\"value\":{\"strict_transport_security\":{\"enabled\":true,\"max_age\":$max_age,\"include_subdomains\":true,\"preload\":false,\"nosniff\":true}}}"
+    if ! [[ "$max_age" =~ ^[0-9]+$ ]]; then
+        echo -e "${RED}Error: max_age must be a positive integer${NC}" >&2
+        return 2
+    fi
+
+    if [[ "$include_subdomains" == "true" ]]; then
+        echo -e "${YELLOW}Warning: include_subdomains=true will enforce HTTPS on ALL subdomains${NC}"
+    fi
+
+    local data="{\"value\":{\"strict_transport_security\":{\"enabled\":true,\"max_age\":$max_age,\"include_subdomains\":$include_subdomains,\"preload\":false,\"nosniff\":true}}}"
 
     echo -e "${BLUE}Enabling HSTS with max-age: $max_age${NC}"
     local response

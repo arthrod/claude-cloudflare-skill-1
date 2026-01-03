@@ -1,7 +1,6 @@
 **OpenNext Cloudflare Support**: For deploying Next.js applications to Cloudflare Workers, use the `opennextjs-cloudflare` CLI instead of direct wrangler commands. See the skill documentation for CLI commands: `build`, `populateCache`, `preview`, `deploy`, `upload`. Documentation: https://opennext.js.org/cloudflare
 
 You are an advanced assistant specialized in generating Cloudflare Workers code. You have deep knowledge of Cloudflare's platform, APIs, and best practices.
-</system_context>
 
 <behavior_guidelines>
 
@@ -83,7 +82,7 @@ You are an advanced assistant specialized in generating Cloudflare Workers code.
 {
   "name": "app-name-goes-here", // name of the app
   "main": "src/index.ts", // default file
-  "compatibility_date": "2025-02-11",
+  "compatibility_date": "2025-03-07",
   "compatibility_flags": ["nodejs_compat"], // Enable Node.js compatibility
   "observability": {
     // Enable logging by default
@@ -403,7 +402,7 @@ export default app
 {
   "name": "auth-worker",
   "main": "src/index.ts",
-  "compatibility_date": "2025-02-11",
+  "compatibility_date": "2025-03-07",
   "kv_namespaces": [
     {
       "binding": "AUTH_TOKENS",
@@ -484,7 +483,7 @@ const requests = batch.messages.map(msg => msg.body);
 {
   "name": "request-logger-consumer",
   "main": "src/index.ts",
-  "compatibility_date": "2025-02-11",
+  "compatibility_date": "2025-03-07",
   "queues": {
         "producers": [{
       "name": "request-queue",
@@ -561,7 +560,7 @@ const sql = postgres(env.HYPERDRIVE.connectionString)
 {
   "name": "hyperdrive-postgres",
   "main": "src/index.ts",
-  "compatibility_date": "2025-02-11",
+  "compatibility_date": "2025-03-07",
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",
@@ -700,7 +699,7 @@ let url = new URL(req.url);
 {
   "name": "workflows-starter",
   "main": "src/index.ts",
-  "compatibility_date": "2025-02-11",
+  "compatibility_date": "2025-03-07",
   "workflows": [
     {
       "name": "workflows-starter",
@@ -761,7 +760,7 @@ let userId = url.searchParams.get("userId");
 {
   "name": "analytics-engine-example",
   "main": "src/index.ts",
-  "compatibility_date": "2025-02-11",
+  "compatibility_date": "2025-03-07",
   "analytics_engine_datasets": [
       {
         "binding": "<BINDING_NAME>",
@@ -850,7 +849,7 @@ export default {
 {
   "name": "browser-rendering-example",
   "main": "src/index.ts",
-  "compatibility_date": "2025-02-11",
+  "compatibility_date": "2025-03-07",
   "browser": [
     {
       "binding": "BROWSER_RENDERING",
@@ -904,7 +903,7 @@ export default {
 {
   "name": "my-app",
     "main": "src/index.ts",
-  "compatibility_date": "2025-02-11",
+  "compatibility_date": "2025-03-07",
     "assets": { "directory": "./public/", "not_found_handling": "single-page-application", "binding": "ASSETS" },
   "observability": {
     "enabled": true

@@ -177,7 +177,7 @@ get_bandwidth() {
         echo "$response" | jq -r '
             .result.totals.bandwidth |
             "Total: \((.all // 0) / 1024 / 1024 | floor) MB",
-            "Cached: \((.cached // 0) / 1024 / 1024 | floor) MB (\(((.cached // 0) / (.all // 1) * 100) | floor)%)",
+            "Cached: \((.cached // 0) / 1024 / 1024 | floor) MB (\(if (.all // 0) > 0 then ((.cached // 0) / .all * 100) | floor else 0 end)%)",
             "Uncached: \(((.all // 0) - (.cached // 0)) / 1024 / 1024 | floor) MB",
             "",
             "SSL: \(if .ssl then ((.ssl.encrypted // 0) / 1024 / 1024 | floor) else 0 end) MB encrypted"

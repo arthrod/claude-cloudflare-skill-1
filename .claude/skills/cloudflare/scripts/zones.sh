@@ -134,7 +134,15 @@ create_zone() {
         # Get first account
         local accounts_response
         accounts_response=$(cf_request "GET" "/accounts")
+        if ! check_response "$accounts_response" 2>/dev/null; then
+            echo -e "${RED}Error: Failed to fetch accounts${NC}" >&2
+            return 1
+        fi
         account_id=$(echo "$accounts_response" | jq -r '.result[0].id')
+        if [[ -z "$account_id" || "$account_id" == "null" ]]; then
+            echo -e "${RED}Error: No accounts found${NC}" >&2
+            return 2
+        fi
 
         data=$(jq -n \
             --arg name "$domain" \
